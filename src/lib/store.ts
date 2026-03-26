@@ -36,11 +36,22 @@ export interface Sale {
   date: string;
 }
 
+export type ExpenseCategory = "purchase" | "packaging" | "delivery" | "taxes" | "other";
+
+export interface Expense {
+  id: string;
+  category: ExpenseCategory;
+  description: string;
+  amount: number;
+  date: string;
+}
+
 export interface AppState {
   greenCoffee: GreenCoffee[];
   roastedCoffee: RoastedCoffee[];
   clients: Client[];
   sales: Sale[];
+  expenses: Expense[];
 }
 
 const STORAGE_KEY = "kavoblik-data";
@@ -50,6 +61,7 @@ const defaultState: AppState = {
   roastedCoffee: [],
   clients: [],
   sales: [],
+  expenses: [],
 };
 
 function loadState(): AppState {
@@ -126,5 +138,12 @@ export function useAppStore() {
     });
   }, []);
 
-  return { ...state, addGreenCoffee, roastCoffee, addClient, addSale };
+  const addExpense = useCallback((expense: Omit<Expense, "id" | "date">) => {
+    setState((s) => ({
+      ...s,
+      expenses: [...s.expenses, { ...expense, id: crypto.randomUUID(), date: new Date().toISOString() }],
+    }));
+  }, []);
+
+  return { ...state, addGreenCoffee, roastCoffee, addClient, addSale, addExpense };
 }

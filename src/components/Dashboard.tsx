@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, Coffee, Users, TrendingUp } from "lucide-react";
+import { Package, Coffee, Users, TrendingUp, TrendingDown, DollarSign } from "lucide-react";
 import type { AppState } from "@/lib/store";
 import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
@@ -14,6 +14,8 @@ export default function Dashboard({ state }: Props) {
   const totalGreen = state.greenCoffee.reduce((s, c) => s + c.weightKg, 0);
   const totalRoasted = state.roastedCoffee.reduce((s, c) => s + c.weightKg, 0);
   const totalRevenue = state.sales.reduce((s, c) => s + c.totalPrice, 0);
+  const totalExpenses = state.expenses.reduce((s, e) => s + e.amount, 0);
+  const netProfit = totalRevenue - totalExpenses;
   const totalClients = state.clients.length;
 
   const chartData = useMemo(() => {
@@ -26,25 +28,32 @@ export default function Dashboard({ state }: Props) {
         const d = new Date(s.date);
         return d >= day && d < dayEnd;
       });
+      const dayExpenses = state.expenses.filter((e) => {
+        const d = new Date(e.date);
+        return d >= day && d < dayEnd;
+      });
       data.push({
         date: format(day, "dd.MM", { locale: uk }),
         revenue: Math.round(daySales.reduce((s, c) => s + c.totalPrice, 0)),
+        expenses: Math.round(dayExpenses.reduce((s, e) => s + e.amount, 0)),
         weight: parseFloat(daySales.reduce((s, c) => s + c.weightKg, 0).toFixed(1)),
       });
     }
     return data;
-  }, [state.sales]);
+  }, [state.sales, state.expenses]);
 
   const stats = [
     { label: "Зелена кава", value: `${totalGreen.toFixed(1)} кг`, icon: Package, color: "text-coffee-green" },
     { label: "Смажена кава", value: `${totalRoasted.toFixed(1)} кг`, icon: Coffee, color: "text-coffee-roasted" },
     { label: "Клієнти", value: totalClients, icon: Users, color: "text-primary" },
-    { label: "Виручка", value: `${totalRevenue.toFixed(0)} ₴`, icon: TrendingUp, color: "text-accent" },
+    { label: "Дохід", value: `${totalRevenue.toFixed(0)} ₴`, icon: TrendingUp, color: "text-accent" },
+    { label: "Витрати", value: `${totalExpenses.toFixed(0)} ₴`, icon: TrendingDown, color: "text-destructive" },
+    { label: "Чистий прибуток", value: `${netProfit.toFixed(0)} ₴`, icon: DollarSign, color: netProfit >= 0 ? "text-success" : "text-destructive" },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {stats.map((s) => (
           <Card key={s.label}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -78,11 +87,12 @@ export default function Dashboard({ state }: Props) {
                     borderRadius: "0.75rem",
                   }}
                   formatter={(value: number, name: string) => [
-                    name === "revenue" ? `${value} ₴` : `${value} кг`,
-                    name === "revenue" ? "Виручка" : "Вага",
+                    name === "revenue" ? `${value} ₴` : name === "expenses" ? `${value} ₴` : `${value} кг`,
+                    name === "revenue" ? "Дохід" : name === "expenses" ? "Витрати" : "Вага",
                   ]}
                 />
-                <Bar dataKey="revenue" fill="hsl(25 60% 28%)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="revenue" fill="hsl(25 60% 28%)" radius={[4, 4, 0, 0]} name="revenue" />
+                <Bar dataKey="expenses" fill="hsl(0 65% 48%)" radius={[4, 4, 0, 0]} name="expenses" />
               </BarChart>
             </ResponsiveContainer>
           )}

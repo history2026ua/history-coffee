@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutDashboard, Package, Coffee, Users, ShoppingCart } from "lucide-react";
+import { LayoutDashboard, Package, Coffee, Users, ShoppingCart, Receipt } from "lucide-react";
 import Dashboard from "@/components/Dashboard";
 import GreenCoffeeSection from "@/components/GreenCoffeeSection";
 import RoastedCoffeeSection from "@/components/RoastedCoffeeSection";
 import ClientsSection from "@/components/ClientsSection";
 import SalesSection from "@/components/SalesSection";
+import ExpensesSection from "@/components/ExpensesSection";
 
 export default function Index() {
   const store = useAppStore();
@@ -39,6 +40,9 @@ export default function Index() {
             <TabsTrigger value="sales" className="gap-1.5">
               <ShoppingCart className="h-4 w-4" /> Продажі
             </TabsTrigger>
+            <TabsTrigger value="expenses" className="gap-1.5">
+              <Receipt className="h-4 w-4" /> Витрати
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard">
@@ -55,6 +59,9 @@ export default function Index() {
           </TabsContent>
           <TabsContent value="sales">
             <SalesSection clients={store.clients} sales={store.sales} greenCoffee={store.greenCoffee} roastedCoffee={store.roastedCoffee} onAdd={store.addSale} />
+          </TabsContent>
+          <TabsContent value="expenses">
+            <ExpensesSection expenses={store.expenses} onAdd={store.addExpense} />
           </TabsContent>
         </Tabs>
       </main>
