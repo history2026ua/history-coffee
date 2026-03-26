@@ -61,6 +61,7 @@ const defaultState: AppState = {
   roastedCoffee: [],
   clients: [],
   sales: [],
+  expenses: [],
 };
 
 function loadState(): AppState {
