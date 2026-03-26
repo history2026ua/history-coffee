@@ -36,11 +36,22 @@ export interface Sale {
   date: string;
 }
 
+export type ExpenseCategory = "purchase" | "packaging" | "delivery" | "taxes" | "other";
+
+export interface Expense {
+  id: string;
+  category: ExpenseCategory;
+  description: string;
+  amount: number;
+  date: string;
+}
+
 export interface AppState {
   greenCoffee: GreenCoffee[];
   roastedCoffee: RoastedCoffee[];
   clients: Client[];
   sales: Sale[];
+  expenses: Expense[];
 }
 
 const STORAGE_KEY = "kavoblik-data";
