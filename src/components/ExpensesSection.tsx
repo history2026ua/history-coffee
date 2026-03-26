@@ -24,14 +24,19 @@ interface Props {
 export default function ExpensesSection({ expenses, onAdd }: Props) {
   const [category, setCategory] = useState<ExpenseCategory>("purchase");
   const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [pricePerUnit, setPricePerUnit] = useState("");
+
+  const parsedQty = parseFloat(quantity);
+  const parsedPrice = parseFloat(pricePerUnit);
+  const calculatedAmount = !isNaN(parsedQty) && !isNaN(parsedPrice) ? parsedQty * parsedPrice : 0;
 
   const handleAdd = () => {
-    const amt = parseFloat(amount);
-    if (!description.trim() || isNaN(amt) || amt <= 0) return;
-    onAdd({ category, description: description.trim(), amount: amt });
+    if (!description.trim() || isNaN(parsedQty) || parsedQty <= 0 || isNaN(parsedPrice) || parsedPrice <= 0) return;
+    onAdd({ category, description: description.trim(), quantity: parsedQty, pricePerUnit: parsedPrice, amount: calculatedAmount });
     setDescription("");
-    setAmount("");
+    setQuantity("");
+    setPricePerUnit("");
   };
 
   const totalByCategory = (cat: ExpenseCategory) =>
@@ -46,7 +51,7 @@ export default function ExpensesSection({ expenses, onAdd }: Props) {
           <CardTitle>Додати витрату</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
             <Select value={category} onValueChange={(v) => setCategory(v as ExpenseCategory)}>
               <SelectTrigger>
                 <SelectValue />
@@ -58,7 +63,11 @@ export default function ExpensesSection({ expenses, onAdd }: Props) {
               </SelectContent>
             </Select>
             <Input placeholder="Опис" value={description} onChange={(e) => setDescription(e.target.value)} />
-            <Input type="number" placeholder="Сума, ₴" value={amount} onChange={(e) => setAmount(e.target.value)} min="0" step="0.01" />
+            <Input type="number" placeholder="Кількість" value={quantity} onChange={(e) => setQuantity(e.target.value)} min="0" step="0.01" />
+            <Input type="number" placeholder="Ціна за од., ₴" value={pricePerUnit} onChange={(e) => setPricePerUnit(e.target.value)} min="0" step="0.01" />
+            <div className="text-sm font-semibold text-muted-foreground self-center">
+              Сума: {calculatedAmount > 0 ? `${calculatedAmount.toFixed(2)} ₴` : "—"}
+            </div>
             <Button onClick={handleAdd} className="gap-1.5">
               <Plus className="h-4 w-4" /> Додати
             </Button>
