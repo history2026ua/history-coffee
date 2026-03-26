@@ -100,6 +100,9 @@ export default function ExpensesSection({ expenses, onAdd }: Props) {
                       </span>
                       <span className="font-medium">{exp.description}</span>
                       <span className="text-muted-foreground ml-2 text-sm">
+                        {exp.quantity} × {exp.pricePerUnit.toFixed(2)} ₴
+                      </span>
+                      <span className="text-muted-foreground ml-2 text-sm">
                         {format(new Date(exp.date), "dd.MM.yyyy", { locale: uk })}
                       </span>
                     </div>

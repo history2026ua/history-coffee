@@ -42,6 +42,8 @@ export interface Expense {
   id: string;
   category: ExpenseCategory;
   description: string;
+  quantity: number;
+  pricePerUnit: number;
   amount: number;
   date: string;
 }
