@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, Coffee, Users, TrendingUp } from "lucide-react";
+import { Package, Coffee, Users, TrendingUp, TrendingDown, DollarSign } from "lucide-react";
 import type { AppState } from "@/lib/store";
 import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
