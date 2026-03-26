@@ -138,5 +138,12 @@ export function useAppStore() {
     });
   }, []);
 
-  return { ...state, addGreenCoffee, roastCoffee, addClient, addSale };
+  const addExpense = useCallback((expense: Omit<Expense, "id" | "date">) => {
+    setState((s) => ({
+      ...s,
+      expenses: [...s.expenses, { ...expense, id: crypto.randomUUID(), date: new Date().toISOString() }],
+    }));
+  }, []);
+
+  return { ...state, addGreenCoffee, roastCoffee, addClient, addSale, addExpense };
 }
