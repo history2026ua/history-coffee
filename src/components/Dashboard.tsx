@@ -87,11 +87,12 @@ export default function Dashboard({ state }: Props) {
                     borderRadius: "0.75rem",
                   }}
                   formatter={(value: number, name: string) => [
-                    name === "revenue" ? `${value} ₴` : `${value} кг`,
-                    name === "revenue" ? "Виручка" : "Вага",
+                    name === "revenue" ? `${value} ₴` : name === "expenses" ? `${value} ₴` : `${value} кг`,
+                    name === "revenue" ? "Дохід" : name === "expenses" ? "Витрати" : "Вага",
                   ]}
                 />
-                <Bar dataKey="revenue" fill="hsl(25 60% 28%)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="revenue" fill="hsl(25 60% 28%)" radius={[4, 4, 0, 0]} name="revenue" />
+                <Bar dataKey="expenses" fill="hsl(0 65% 48%)" radius={[4, 4, 0, 0]} name="expenses" />
               </BarChart>
             </ResponsiveContainer>
           )}
