@@ -148,10 +148,18 @@ export function useAppStore() {
   }, []);
 
   const addRoastedCoffee = useCallback((coffee: Omit<RoastedCoffee, "id" | "roastedAt">) => {
-    setState((s) => ({
-      ...s,
-      roastedCoffee: [...s.roastedCoffee, { ...coffee, id: crypto.randomUUID(), roastedAt: new Date().toISOString() }],
-    }));
+    setState((s) => {
+      const greenNeeded = coffee.weightKg / 0.8;
+      const green = s.greenCoffee.find((g) => g.id === coffee.sourceGreenId);
+      if (!green || green.weightKg < greenNeeded) return s;
+      return {
+        ...s,
+        greenCoffee: s.greenCoffee.map((g) =>
+          g.id === coffee.sourceGreenId ? { ...g, weightKg: g.weightKg - greenNeeded } : g
+        ),
+        roastedCoffee: [...s.roastedCoffee, { ...coffee, id: crypto.randomUUID(), roastedAt: new Date().toISOString() }],
+      };
+    });
   }, []);
 
   return { ...state, addGreenCoffee, roastCoffee, addRoastedCoffee, addClient, addSale, addExpense };

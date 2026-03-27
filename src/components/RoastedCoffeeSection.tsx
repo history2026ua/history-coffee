@@ -3,25 +3,35 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { RoastedCoffee } from "@/lib/store";
+import type { RoastedCoffee, GreenCoffee } from "@/lib/store";
 import { format } from "date-fns";
 import { uk } from "date-fns/locale";
 import { Plus } from "lucide-react";
 
 interface Props {
   roastedCoffee: RoastedCoffee[];
+  greenCoffee: GreenCoffee[];
   onAdd: (coffee: Omit<RoastedCoffee, "id" | "roastedAt">) => void;
 }
 
-export default function RoastedCoffeeSection({ roastedCoffee, onAdd }: Props) {
-  const [name, setName] = useState("");
+export default function RoastedCoffeeSection({ roastedCoffee, greenCoffee, onAdd }: Props) {
+  const [selectedGreenId, setSelectedGreenId] = useState("");
   const [weightKg, setWeightKg] = useState("");
   const [pricePerKg, setPricePerKg] = useState("");
 
+  const selectedGreen = greenCoffee.find((g) => g.id === selectedGreenId);
+  const greenNeeded = weightKg ? (parseFloat(weightKg) / 0.8) : 0;
+  const hasEnoughGreen = selectedGreen ? selectedGreen.weightKg >= greenNeeded : false;
+
   const handleAdd = () => {
-    if (!name || !weightKg || !pricePerKg) return;
-    onAdd({ sourceGreenId: "", name, weightKg: parseFloat(weightKg), pricePerKg: parseFloat(pricePerKg) });
-    setName("");
+    if (!selectedGreenId || !weightKg || !pricePerKg || !hasEnoughGreen) return;
+    onAdd({
+      sourceGreenId: selectedGreenId,
+      name: (selectedGreen?.name || "") + " (обсмажена)",
+      weightKg: parseFloat(weightKg),
+      pricePerKg: parseFloat(pricePerKg),
+    });
+    setSelectedGreenId("");
     setWeightKg("");
     setPricePerKg("");
   };
@@ -35,19 +45,34 @@ export default function RoastedCoffeeSection({ roastedCoffee, onAdd }: Props) {
           <h3 className="font-semibold">Додати смажену каву</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <Label>Назва</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Назва кави" />
+              <Label>Зелена кава</Label>
+              <select
+                className="w-full mt-1 px-3 py-2 border rounded-lg bg-background text-sm"
+                value={selectedGreenId}
+                onChange={(e) => setSelectedGreenId(e.target.value)}
+              >
+                <option value="">— Оберіть —</option>
+                {greenCoffee.filter((g) => g.weightKg > 0).map((g) => (
+                  <option key={g.id} value={g.id}>{g.name} ({g.weightKg.toFixed(1)} кг)</option>
+                ))}
+              </select>
             </div>
             <div>
-              <Label>Вага (кг)</Label>
+              <Label>Вага смаженої (кг)</Label>
               <Input type="number" step="0.1" min="0" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder="0.0" />
+              {weightKg && (
+                <p className={`text-xs mt-1 ${hasEnoughGreen ? 'text-muted-foreground' : 'text-destructive'}`}>
+                  Потрібно зеленої: <strong>{greenNeeded.toFixed(1)} кг</strong>
+                  {selectedGreen && !hasEnoughGreen && ` (є лише ${selectedGreen.weightKg.toFixed(1)} кг)`}
+                </p>
+              )}
             </div>
             <div>
               <Label>Ціна за кг (₴)</Label>
               <Input type="number" step="1" min="0" value={pricePerKg} onChange={(e) => setPricePerKg(e.target.value)} placeholder="0" />
             </div>
           </div>
-          <Button onClick={handleAdd} disabled={!name || !weightKg || !pricePerKg} className="gap-1.5">
+          <Button onClick={handleAdd} disabled={!selectedGreenId || !weightKg || !pricePerKg || !hasEnoughGreen} className="gap-1.5">
             <Plus className="h-4 w-4" /> Додати
           </Button>
         </CardContent>
