@@ -49,19 +49,19 @@ export default function Index() {
             <Dashboard state={store} />
           </TabsContent>
           <TabsContent value="green">
-            <GreenCoffeeSection greenCoffee={store.greenCoffee} onAdd={store.addGreenCoffee} onRoast={store.roastCoffee} />
+            <GreenCoffeeSection greenCoffee={store.greenCoffee} onAdd={store.addGreenCoffee} onRoast={store.roastCoffee} onUpdate={store.updateGreenCoffee} />
           </TabsContent>
           <TabsContent value="roasted">
-            <RoastedCoffeeSection roastedCoffee={store.roastedCoffee} greenCoffee={store.greenCoffee} onAdd={store.addRoastedCoffee} />
+            <RoastedCoffeeSection roastedCoffee={store.roastedCoffee} greenCoffee={store.greenCoffee} onAdd={store.addRoastedCoffee} onUpdate={store.updateRoastedCoffee} />
           </TabsContent>
           <TabsContent value="clients">
-            <ClientsSection clients={store.clients} sales={store.sales} greenCoffee={store.greenCoffee} roastedCoffee={store.roastedCoffee} onAdd={store.addClient} />
+            <ClientsSection clients={store.clients} sales={store.sales} greenCoffee={store.greenCoffee} roastedCoffee={store.roastedCoffee} onAdd={store.addClient} onUpdate={store.updateClient} />
           </TabsContent>
           <TabsContent value="sales">
-            <SalesSection clients={store.clients} sales={store.sales} greenCoffee={store.greenCoffee} roastedCoffee={store.roastedCoffee} onAdd={store.addSale} />
+            <SalesSection clients={store.clients} sales={store.sales} greenCoffee={store.greenCoffee} roastedCoffee={store.roastedCoffee} onAdd={store.addSale} onUpdate={store.updateSale} />
           </TabsContent>
           <TabsContent value="expenses">
-            <ExpensesSection expenses={store.expenses} onAdd={store.addExpense} />
+            <ExpensesSection expenses={store.expenses} onAdd={store.addExpense} onUpdate={store.updateExpense} />
           </TabsContent>
         </Tabs>
       </main>
