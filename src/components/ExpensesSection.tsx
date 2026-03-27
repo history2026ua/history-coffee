@@ -2,8 +2,10 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Plus, Pencil } from "lucide-react";
 import type { Expense, ExpenseCategory } from "@/lib/store";
 import { format } from "date-fns";
 import { uk } from "date-fns/locale";
@@ -19,17 +21,29 @@ const CATEGORY_LABELS: Record<ExpenseCategory, string> = {
 interface Props {
   expenses: Expense[];
   onAdd: (expense: Omit<Expense, "id" | "date">) => void;
+  onUpdate: (id: string, data: Partial<Omit<Expense, "id" | "date">>) => void;
 }
 
-export default function ExpensesSection({ expenses, onAdd }: Props) {
+export default function ExpensesSection({ expenses, onAdd, onUpdate }: Props) {
   const [category, setCategory] = useState<ExpenseCategory>("purchase");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
   const [pricePerUnit, setPricePerUnit] = useState("");
 
+  const [editOpen, setEditOpen] = useState(false);
+  const [editItem, setEditItem] = useState<Expense | null>(null);
+  const [editCategory, setEditCategory] = useState<ExpenseCategory>("purchase");
+  const [editDescription, setEditDescription] = useState("");
+  const [editQuantity, setEditQuantity] = useState("");
+  const [editPricePerUnit, setEditPricePerUnit] = useState("");
+
   const parsedQty = parseFloat(quantity);
   const parsedPrice = parseFloat(pricePerUnit);
   const calculatedAmount = !isNaN(parsedQty) && !isNaN(parsedPrice) ? parsedQty * parsedPrice : 0;
+
+  const editParsedQty = parseFloat(editQuantity);
+  const editParsedPrice = parseFloat(editPricePerUnit);
+  const editCalculatedAmount = !isNaN(editParsedQty) && !isNaN(editParsedPrice) ? editParsedQty * editParsedPrice : 0;
 
   const handleAdd = () => {
     if (!description.trim() || isNaN(parsedQty) || parsedQty <= 0 || isNaN(parsedPrice) || parsedPrice <= 0) return;
@@ -37,6 +51,28 @@ export default function ExpensesSection({ expenses, onAdd }: Props) {
     setDescription("");
     setQuantity("");
     setPricePerUnit("");
+  };
+
+  const openEdit = (item: Expense) => {
+    setEditItem(item);
+    setEditCategory(item.category);
+    setEditDescription(item.description);
+    setEditQuantity(String(item.quantity));
+    setEditPricePerUnit(String(item.pricePerUnit));
+    setEditOpen(true);
+  };
+
+  const handleEdit = () => {
+    if (!editItem || !editDescription.trim() || isNaN(editParsedQty) || editParsedQty <= 0 || isNaN(editParsedPrice) || editParsedPrice <= 0) return;
+    onUpdate(editItem.id, {
+      category: editCategory,
+      description: editDescription.trim(),
+      quantity: editParsedQty,
+      pricePerUnit: editParsedPrice,
+      amount: editCalculatedAmount,
+    });
+    setEditOpen(false);
+    setEditItem(null);
   };
 
   const totalByCategory = (cat: ExpenseCategory) =>
@@ -74,6 +110,32 @@ export default function ExpensesSection({ expenses, onAdd }: Props) {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Редагувати витрату</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Категорія</Label>
+              <Select value={editCategory} onValueChange={(v) => setEditCategory(v as ExpenseCategory)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+                    <SelectItem key={key} value={key}>{label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div><Label>Опис</Label><Input value={editDescription} onChange={(e) => setEditDescription(e.target.value)} /></div>
+            <div><Label>Кількість</Label><Input type="number" step="0.01" value={editQuantity} onChange={(e) => setEditQuantity(e.target.value)} /></div>
+            <div><Label>Ціна за од. (₴)</Label><Input type="number" step="0.01" value={editPricePerUnit} onChange={(e) => setEditPricePerUnit(e.target.value)} /></div>
+            <div className="text-sm font-semibold">
+              Сума: {editCalculatedAmount > 0 ? `${editCalculatedAmount.toFixed(2)} ₴` : "—"}
+            </div>
+            <Button onClick={handleEdit} className="w-full">Зберегти</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {(Object.entries(CATEGORY_LABELS) as [ExpenseCategory, string][]).map(([cat, label]) => (
@@ -115,7 +177,12 @@ export default function ExpensesSection({ expenses, onAdd }: Props) {
                         {format(new Date(exp.date), "dd.MM.yyyy", { locale: uk })}
                       </span>
                     </div>
-                    <div className="font-semibold text-destructive">{exp.amount.toFixed(0)} ₴</div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-destructive">{exp.amount.toFixed(0)} ₴</span>
+                      <Button variant="ghost" size="icon" onClick={() => openEdit(exp)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
             </div>

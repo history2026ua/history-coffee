@@ -3,21 +3,29 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { RoastedCoffee, GreenCoffee } from "@/lib/store";
 import { format } from "date-fns";
 import { uk } from "date-fns/locale";
-import { Plus } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
 
 interface Props {
   roastedCoffee: RoastedCoffee[];
   greenCoffee: GreenCoffee[];
   onAdd: (coffee: Omit<RoastedCoffee, "id" | "roastedAt">) => void;
+  onUpdate: (id: string, data: Partial<Omit<RoastedCoffee, "id" | "roastedAt">>) => void;
 }
 
-export default function RoastedCoffeeSection({ roastedCoffee, greenCoffee, onAdd }: Props) {
+export default function RoastedCoffeeSection({ roastedCoffee, greenCoffee, onAdd, onUpdate }: Props) {
   const [selectedGreenId, setSelectedGreenId] = useState("");
   const [weightKg, setWeightKg] = useState("");
   const [pricePerKg, setPricePerKg] = useState("");
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editItem, setEditItem] = useState<RoastedCoffee | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editWeight, setEditWeight] = useState("");
+  const [editPrice, setEditPrice] = useState("");
 
   const selectedGreen = greenCoffee.find((g) => g.id === selectedGreenId);
   const greenNeeded = weightKg ? (parseFloat(weightKg) / 0.8) : 0;
@@ -34,6 +42,21 @@ export default function RoastedCoffeeSection({ roastedCoffee, greenCoffee, onAdd
     setSelectedGreenId("");
     setWeightKg("");
     setPricePerKg("");
+  };
+
+  const openEdit = (item: RoastedCoffee) => {
+    setEditItem(item);
+    setEditName(item.name);
+    setEditWeight(String(item.weightKg));
+    setEditPrice(String(item.pricePerKg));
+    setEditOpen(true);
+  };
+
+  const handleEdit = () => {
+    if (!editItem || !editName || !editWeight || !editPrice) return;
+    onUpdate(editItem.id, { name: editName, weightKg: parseFloat(editWeight), pricePerKg: parseFloat(editPrice) });
+    setEditOpen(false);
+    setEditItem(null);
   };
 
   return (
@@ -78,6 +101,18 @@ export default function RoastedCoffeeSection({ roastedCoffee, greenCoffee, onAdd
         </CardContent>
       </Card>
 
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Редагувати смажену каву</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div><Label>Назва</Label><Input value={editName} onChange={(e) => setEditName(e.target.value)} /></div>
+            <div><Label>Вага (кг)</Label><Input type="number" step="0.1" value={editWeight} onChange={(e) => setEditWeight(e.target.value)} /></div>
+            <div><Label>Ціна (₴/кг)</Label><Input type="number" step="1" value={editPrice} onChange={(e) => setEditPrice(e.target.value)} /></div>
+            <Button onClick={handleEdit} className="w-full">Зберегти</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {roastedCoffee.length === 0 ? (
         <Card><CardContent className="py-8 text-center text-muted-foreground">Ще не обсмажено жодної партії.</CardContent></Card>
       ) : (
@@ -91,9 +126,14 @@ export default function RoastedCoffeeSection({ roastedCoffee, greenCoffee, onAdd
                     Обсмажено: {format(new Date(c.roastedAt), "dd.MM.yyyy", { locale: uk })}
                   </p>
                 </div>
-                <div className="text-right">
-                  <p className="font-bold text-coffee-roasted">{c.weightKg.toFixed(1)} кг</p>
-                  <p className="text-sm text-muted-foreground">{c.pricePerKg} ₴/кг</p>
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <p className="font-bold text-coffee-roasted">{c.weightKg.toFixed(1)} кг</p>
+                    <p className="text-sm text-muted-foreground">{c.pricePerKg} ₴/кг</p>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => openEdit(c)}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
