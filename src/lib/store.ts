@@ -147,5 +147,12 @@ export function useAppStore() {
     }));
   }, []);
 
-  return { ...state, addGreenCoffee, roastCoffee, addClient, addSale, addExpense };
+  const addRoastedCoffee = useCallback((coffee: Omit<RoastedCoffee, "id" | "roastedAt">) => {
+    setState((s) => ({
+      ...s,
+      roastedCoffee: [...s.roastedCoffee, { ...coffee, id: crypto.randomUUID(), roastedAt: new Date().toISOString() }],
+    }));
+  }, []);
+
+  return { ...state, addGreenCoffee, roastCoffee, addRoastedCoffee, addClient, addSale, addExpense };
 }
