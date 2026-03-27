@@ -52,7 +52,7 @@ export default function Index() {
             <GreenCoffeeSection greenCoffee={store.greenCoffee} onAdd={store.addGreenCoffee} onRoast={store.roastCoffee} />
           </TabsContent>
           <TabsContent value="roasted">
-            <RoastedCoffeeSection roastedCoffee={store.roastedCoffee} />
+            <RoastedCoffeeSection roastedCoffee={store.roastedCoffee} onAdd={store.addRoastedCoffee} />
           </TabsContent>
           <TabsContent value="clients">
             <ClientsSection clients={store.clients} sales={store.sales} greenCoffee={store.greenCoffee} roastedCoffee={store.roastedCoffee} onAdd={store.addClient} />
