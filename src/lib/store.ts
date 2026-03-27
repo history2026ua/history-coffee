@@ -162,5 +162,44 @@ export function useAppStore() {
     });
   }, []);
 
-  return { ...state, addGreenCoffee, roastCoffee, addRoastedCoffee, addClient, addSale, addExpense };
+  const updateGreenCoffee = useCallback((id: string, data: Partial<Omit<GreenCoffee, "id" | "addedAt">>) => {
+    setState((s) => ({
+      ...s,
+      greenCoffee: s.greenCoffee.map((g) => (g.id === id ? { ...g, ...data } : g)),
+    }));
+  }, []);
+
+  const updateRoastedCoffee = useCallback((id: string, data: Partial<Omit<RoastedCoffee, "id" | "roastedAt">>) => {
+    setState((s) => ({
+      ...s,
+      roastedCoffee: s.roastedCoffee.map((c) => (c.id === id ? { ...c, ...data } : c)),
+    }));
+  }, []);
+
+  const updateClient = useCallback((id: string, data: Partial<Omit<Client, "id" | "createdAt">>) => {
+    setState((s) => ({
+      ...s,
+      clients: s.clients.map((c) => (c.id === id ? { ...c, ...data } : c)),
+    }));
+  }, []);
+
+  const updateSale = useCallback((id: string, data: Partial<Omit<Sale, "id" | "date">>) => {
+    setState((s) => ({
+      ...s,
+      sales: s.sales.map((sale) => (sale.id === id ? { ...sale, ...data } : sale)),
+    }));
+  }, []);
+
+  const updateExpense = useCallback((id: string, data: Partial<Omit<Expense, "id" | "date">>) => {
+    setState((s) => ({
+      ...s,
+      expenses: s.expenses.map((e) => (e.id === id ? { ...e, ...data } : e)),
+    }));
+  }, []);
+
+  return {
+    ...state,
+    addGreenCoffee, roastCoffee, addRoastedCoffee, addClient, addSale, addExpense,
+    updateGreenCoffee, updateRoastedCoffee, updateClient, updateSale, updateExpense,
+  };
 }
