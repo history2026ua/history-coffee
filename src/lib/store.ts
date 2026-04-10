@@ -197,9 +197,41 @@ export function useAppStore() {
     }));
   }, []);
 
+  const deleteGreenCoffee = useCallback((id: string) => {
+    setState((s) => ({ ...s, greenCoffee: s.greenCoffee.filter((g) => g.id !== id) }));
+  }, []);
+
+  const deleteRoastedCoffee = useCallback((id: string) => {
+    setState((s) => {
+      const roasted = s.roastedCoffee.find((c) => c.id === id);
+      if (!roasted) return s;
+      const greenNeeded = roasted.weightKg / 0.8;
+      return {
+        ...s,
+        greenCoffee: s.greenCoffee.map((g) =>
+          g.id === roasted.sourceGreenId ? { ...g, weightKg: g.weightKg + greenNeeded } : g
+        ),
+        roastedCoffee: s.roastedCoffee.filter((c) => c.id !== id),
+      };
+    });
+  }, []);
+
+  const deleteClient = useCallback((id: string) => {
+    setState((s) => ({ ...s, clients: s.clients.filter((c) => c.id !== id) }));
+  }, []);
+
+  const deleteSale = useCallback((id: string) => {
+    setState((s) => ({ ...s, sales: s.sales.filter((sale) => sale.id !== id) }));
+  }, []);
+
+  const deleteExpense = useCallback((id: string) => {
+    setState((s) => ({ ...s, expenses: s.expenses.filter((e) => e.id !== id) }));
+  }, []);
+
   return {
     ...state,
     addGreenCoffee, roastCoffee, addRoastedCoffee, addClient, addSale, addExpense,
     updateGreenCoffee, updateRoastedCoffee, updateClient, updateSale, updateExpense,
+    deleteGreenCoffee, deleteRoastedCoffee, deleteClient, deleteSale, deleteExpense,
   };
 }

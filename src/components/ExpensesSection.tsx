@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import type { Expense, ExpenseCategory } from "@/lib/store";
 import { format } from "date-fns";
 import { uk } from "date-fns/locale";
@@ -22,9 +22,10 @@ interface Props {
   expenses: Expense[];
   onAdd: (expense: Omit<Expense, "id" | "date">) => void;
   onUpdate: (id: string, data: Partial<Omit<Expense, "id" | "date">>) => void;
+  onDelete: (id: string) => void;
 }
 
-export default function ExpensesSection({ expenses, onAdd, onUpdate }: Props) {
+export default function ExpensesSection({ expenses, onAdd, onUpdate, onDelete }: Props) {
   const [category, setCategory] = useState<ExpenseCategory>("purchase");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -181,6 +182,9 @@ export default function ExpensesSection({ expenses, onAdd, onUpdate }: Props) {
                       <span className="font-semibold text-destructive">{exp.amount.toFixed(0)} ₴</span>
                       <Button variant="ghost" size="icon" onClick={() => openEdit(exp)}>
                         <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="text-destructive" onClick={() => onDelete(exp.id)}>
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>

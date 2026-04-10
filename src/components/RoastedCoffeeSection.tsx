@@ -7,16 +7,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import type { RoastedCoffee, GreenCoffee } from "@/lib/store";
 import { format } from "date-fns";
 import { uk } from "date-fns/locale";
-import { Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 
 interface Props {
   roastedCoffee: RoastedCoffee[];
   greenCoffee: GreenCoffee[];
   onAdd: (coffee: Omit<RoastedCoffee, "id" | "roastedAt">) => void;
   onUpdate: (id: string, data: Partial<Omit<RoastedCoffee, "id" | "roastedAt">>) => void;
+  onDelete: (id: string) => void;
 }
 
-export default function RoastedCoffeeSection({ roastedCoffee, greenCoffee, onAdd, onUpdate }: Props) {
+export default function RoastedCoffeeSection({ roastedCoffee, greenCoffee, onAdd, onUpdate, onDelete }: Props) {
   const [selectedGreenId, setSelectedGreenId] = useState("");
   const [weightKg, setWeightKg] = useState("");
   const [pricePerKg, setPricePerKg] = useState("");
@@ -133,6 +134,9 @@ export default function RoastedCoffeeSection({ roastedCoffee, greenCoffee, onAdd
                   </div>
                   <Button variant="ghost" size="icon" onClick={() => openEdit(c)}>
                     <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="text-destructive" onClick={() => onDelete(c.id)}>
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </CardContent>

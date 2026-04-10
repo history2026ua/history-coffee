@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Flame, Pencil } from "lucide-react";
+import { Plus, Flame, Pencil, Trash2 } from "lucide-react";
 import type { GreenCoffee } from "@/lib/store";
 
 interface Props {
@@ -12,9 +12,10 @@ interface Props {
   onAdd: (coffee: Omit<GreenCoffee, "id" | "addedAt">) => void;
   onRoast: (greenId: string, weightKg: number, pricePerKg: number) => void;
   onUpdate: (id: string, data: Partial<Omit<GreenCoffee, "id" | "addedAt">>) => void;
+  onDelete: (id: string) => void;
 }
 
-export default function GreenCoffeeSection({ greenCoffee, onAdd, onRoast, onUpdate }: Props) {
+export default function GreenCoffeeSection({ greenCoffee, onAdd, onRoast, onUpdate, onDelete }: Props) {
   const [addOpen, setAddOpen] = useState(false);
   const [roastOpen, setRoastOpen] = useState(false);
   const [roastId, setRoastId] = useState("");
@@ -156,6 +157,9 @@ export default function GreenCoffeeSection({ greenCoffee, onAdd, onRoast, onUpda
                   </div>
                   <Button variant="ghost" size="icon" onClick={() => openEdit(c)}>
                     <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="text-destructive" onClick={() => onDelete(c.id)}>
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </CardContent>
