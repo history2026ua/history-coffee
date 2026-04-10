@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import type { Client, Sale, GreenCoffee, RoastedCoffee } from "@/lib/store";
 
 interface Props {
@@ -14,9 +14,10 @@ interface Props {
   roastedCoffee: RoastedCoffee[];
   onAdd: (client: Omit<Client, "id" | "createdAt">) => void;
   onUpdate: (id: string, data: Partial<Omit<Client, "id" | "createdAt">>) => void;
+  onDelete: (id: string) => void;
 }
 
-export default function ClientsSection({ clients, sales, greenCoffee, roastedCoffee, onAdd, onUpdate }: Props) {
+export default function ClientsSection({ clients, sales, greenCoffee, roastedCoffee, onAdd, onUpdate, onDelete }: Props) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -104,6 +105,9 @@ export default function ClientsSection({ clients, sales, greenCoffee, roastedCof
                       </div>
                       <Button variant="ghost" size="icon" onClick={() => openEdit(c)}>
                         <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="text-destructive" onClick={() => onDelete(c.id)}>
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>

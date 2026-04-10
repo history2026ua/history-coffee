@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import type { Client, Sale, GreenCoffee, RoastedCoffee } from "@/lib/store";
 import { format } from "date-fns";
 import { uk } from "date-fns/locale";
@@ -16,9 +16,10 @@ interface Props {
   roastedCoffee: RoastedCoffee[];
   onAdd: (sale: Omit<Sale, "id" | "date">) => void;
   onUpdate: (id: string, data: Partial<Omit<Sale, "id" | "date">>) => void;
+  onDelete: (id: string) => void;
 }
 
-export default function SalesSection({ clients, sales, greenCoffee, roastedCoffee, onAdd, onUpdate }: Props) {
+export default function SalesSection({ clients, sales, greenCoffee, roastedCoffee, onAdd, onUpdate, onDelete }: Props) {
   const [open, setOpen] = useState(false);
   const [clientId, setClientId] = useState("");
   const [coffeeType, setCoffeeType] = useState<"green" | "roasted">("roasted");
@@ -135,6 +136,9 @@ export default function SalesSection({ clients, sales, greenCoffee, roastedCoffe
                     <p className="font-bold text-lg">{sale.totalPrice.toFixed(0)} ₴</p>
                     <Button variant="ghost" size="icon" onClick={() => openEdit(sale)}>
                       <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="text-destructive" onClick={() => onDelete(sale.id)}>
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </CardContent>

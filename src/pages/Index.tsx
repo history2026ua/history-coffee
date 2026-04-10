@@ -49,19 +49,19 @@ export default function Index() {
             <Dashboard state={store} />
           </TabsContent>
           <TabsContent value="green">
-            <GreenCoffeeSection greenCoffee={store.greenCoffee} onAdd={store.addGreenCoffee} onRoast={store.roastCoffee} onUpdate={store.updateGreenCoffee} />
+            <GreenCoffeeSection greenCoffee={store.greenCoffee} onAdd={store.addGreenCoffee} onRoast={store.roastCoffee} onUpdate={store.updateGreenCoffee} onDelete={store.deleteGreenCoffee} />
           </TabsContent>
           <TabsContent value="roasted">
-            <RoastedCoffeeSection roastedCoffee={store.roastedCoffee} greenCoffee={store.greenCoffee} onAdd={store.addRoastedCoffee} onUpdate={store.updateRoastedCoffee} />
+            <RoastedCoffeeSection roastedCoffee={store.roastedCoffee} greenCoffee={store.greenCoffee} onAdd={store.addRoastedCoffee} onUpdate={store.updateRoastedCoffee} onDelete={store.deleteRoastedCoffee} />
           </TabsContent>
           <TabsContent value="clients">
-            <ClientsSection clients={store.clients} sales={store.sales} greenCoffee={store.greenCoffee} roastedCoffee={store.roastedCoffee} onAdd={store.addClient} onUpdate={store.updateClient} />
+            <ClientsSection clients={store.clients} sales={store.sales} greenCoffee={store.greenCoffee} roastedCoffee={store.roastedCoffee} onAdd={store.addClient} onUpdate={store.updateClient} onDelete={store.deleteClient} />
           </TabsContent>
           <TabsContent value="sales">
-            <SalesSection clients={store.clients} sales={store.sales} greenCoffee={store.greenCoffee} roastedCoffee={store.roastedCoffee} onAdd={store.addSale} onUpdate={store.updateSale} />
+            <SalesSection clients={store.clients} sales={store.sales} greenCoffee={store.greenCoffee} roastedCoffee={store.roastedCoffee} onAdd={store.addSale} onUpdate={store.updateSale} onDelete={store.deleteSale} />
           </TabsContent>
           <TabsContent value="expenses">
-            <ExpensesSection expenses={store.expenses} onAdd={store.addExpense} onUpdate={store.updateExpense} />
+            <ExpensesSection expenses={store.expenses} onAdd={store.addExpense} onUpdate={store.updateExpense} onDelete={store.deleteExpense} />
           </TabsContent>
         </Tabs>
       </main>
